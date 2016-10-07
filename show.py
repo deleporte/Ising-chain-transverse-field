@@ -1,14 +1,17 @@
 import matplotlib.pyplot as plt
+import time
 
 def showexact(N=6,Nb_values=50):
     X=[]
     Y=[]
+    t=time.time()
     for enumer in range(0,100):
         J=0.01*float(enumer)
         values=exactdiag(J=J,N=N,Nb_values=Nb_values)
         for val in values:
             X.append(J)
             Y.append(val)
+    print(time.time()-t)
     plt.plot(X,Y,'ro')
     plt.axis([0,1,-N,max(Y)])
     plt.show()
