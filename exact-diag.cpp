@@ -28,7 +28,11 @@ vector<int> digits(int base, int i){
 sp_mat _build_mat(int N, float J)
 {
   vector<float> data; // initialized to empty arrays
-  vector<int> state, varstate, row_ind, col_ind;\
+  vector<int> state, varstate, row_ind, col_ind;
+  data.reserve(N*pow(2,N));
+  row_ind.reserve(N*pow(2,N));
+  col_ind.reserve(N*pow(2,N));
+  state.reserve(N);
   varstate.reserve(N);
   float value;
   int i,j;
@@ -57,11 +61,13 @@ sp_mat _build_mat(int N, float J)
 }
 
 void _find_spectrum(sp_mat M, int Nb_values, float* values){
+  vector<float> eigs;
+  eigs.reserve(Nb_values);
   vec eigval = eigs_sym(M,Nb_values,"sa"); // armadillo vec type
-  vector<float> eigs = conv_to< vector<float> >::from(eigval); //std vector type
+  eigs = conv_to< vector<float> >::from(eigval); //std vector type
   //if (sizeof(values)>= Nb_values*sizeof(float)){
     copy(eigs.begin(), eigs.end(), values);
-  //}
+    //}
 }
 
 void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
@@ -109,4 +115,7 @@ void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
 extern "C" {
   void computePackSpectrum(int N, int samples, int Nb_values, float* values){
     return compute_pack_spectrum(N,samples,Nb_values, values); }
+
+  void computeSpectrum(int N, float J, int Nb_values, float* values){
+    return _find_spectrum(_build_mat(N,J),Nb_values, values); }
 }

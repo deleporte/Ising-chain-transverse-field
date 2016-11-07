@@ -1,11 +1,13 @@
 import numpy as np
 import scipy.sparse
 import scipy.sparse.linalg
+import time
 
 def exactdiag(J=1, N=6, Nb_values=50, Find_vectors=False):
     #runtime : tractable for N<=10
     #needs portation to armadillo
     #building the csr sparse matrix
+    t=time.time()
     shape=(2**int(N),2**int(N))
     data=[]
     row_ind=[]
@@ -33,9 +35,11 @@ def exactdiag(J=1, N=6, Nb_values=50, Find_vectors=False):
     if Find_vectors:
         values=np.real(pack[0])
         vectors=pack[1]
+        print time.time()-t
         return values,vectors
     else:
         values=np.real(pack)
+        print time.time()-t
         return values
 
 
