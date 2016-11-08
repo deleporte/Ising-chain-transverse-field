@@ -35,4 +35,4 @@ def trackdimers_matrix(J,N):
     return M
 
 def approxdiag_trackdimers(J,N):
-    return sorted(scipy.linalg.eigvals(trackdimers_matrix(J,N)))
+    return sorted(scipy.linalg.eigvalsh(trackdimers_matrix(J,N)))

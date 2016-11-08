@@ -63,8 +63,8 @@ def exactvstrackdimers(N=6,Nb_values=50):
     Xappr=[]
     Yappr=[]
     for enumer in range(0,100):
-        J=0.01*float(enumer)
-        values=exactdiag(J=J,N=N,Nb_values=Nb_values)
+        J=0.004*float(enumer)
+        values=exactdiag_cpp(J=J,N=N,Nb_values=Nb_values)
         for val in values:
             X.append(J)
             Y.append(val)
@@ -75,6 +75,18 @@ def exactvstrackdimers(N=6,Nb_values=50):
     plt.plot(X,Y,'ro')
     plt.plot(Xappr,Yappr,'bo')
     plt.axis([0,1,-N,max(Y)])
+    plt.show()
+
+def diff(N=10):
+    X=[]
+    Y=[]
+    for enumer in range(0,100):
+        J=0.01*float(enumer)+0.0005363
+        exval=exactdiag_cpp(J,N,10)[0]
+        apval=approxdiag_trackdimers(J,N)[0]
+        X.append(J)
+        Y.append(np.log(apval-exval))
+    plt.plot(X,Y,'ro')
     plt.show()
 
 def xdimersvsconstant(N=6,Nb_values=50):
@@ -142,22 +154,39 @@ def all(N=6,Nb_values=50):
     ## plt.show()
 
 def log(N=6):
-    Xcs=[]
+    X=[]
     Rcs=[]
-    Xdm=[]
     Rdm=[]
+    Rtb=[]
     for enumer in range(1,100):
         J=0.001*float(enumer)
-        ref=exactdiag(J,N,10)[0]-N
-        valcs=approxdiag_constant(J,N)[0]-N
-        valdm=approxdiag_trackdimers(J,N)[0]-N
-        Xcs.append(np.log(J))
+        ref=exactdiag_cpp(J,N,10)[0]
+        valcs=approxdiag_constant(J,N)[0]
+        valdm=approxdiag_trackdimers(J,N)[0]
+        valtb=approxdiag_turnedblock(J,N)[0]
+        X.append(np.log(J))
         Rcs.append(np.log(valcs-ref))
-        Xdm.append(np.log(J))
         Rdm.append(np.log(valdm-ref))
-    print scipy.stats.linregress(Xcs,Rcs)
-    print scipy.stats.linregress(Xdm,Rdm)
-    plt.plot(Xcs,Rcs,'bo')
-    plt.plot(Xdm,Rdm,'go')
+        Rtb.append(np.log(valtb-ref))
+    print scipy.stats.linregress(X,Rcs)
+    print scipy.stats.linregress(X,Rdm)
+    print scipy.stats.linregress(X,Rtb)
+    plt.plot(X,Rcs,'bo')
+    plt.plot(X,Rdm,'go')
+    plt.plot(X,Rtb,'ro')
+    #plt.axis([0,1,-N,max()])
+    plt.show()
+
+def trackdimersvsturnedblocks(N=6):
+    X=[]
+    Ydm=[]
+    Ytb=[]
+    for enumer in range(1,100):
+        J=0.005*float(enumer)
+        X.append(J)
+        Ydm.append(approxdiag_trackdimers(J,N)[0])
+        Ytb.append(approxdiag_turnedblock(J,N)[0])
+    plt.plot(X,Ydm,'bo')
+    plt.plot(X,Ytb,'go')
     #plt.axis([0,1,-N,max()])
     plt.show()
