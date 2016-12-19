@@ -5,8 +5,8 @@ def menu():
 
     logvar=BooleanVar()
     logvar.set(False)
-    cppvar=BooleanVar()
-    cppvar.set(True)
+    exactvar=StringVar()
+    exactvar.set('cpp')
     constantvar=BooleanVar()
     constantvar.set(True)
     tkdimervar=BooleanVar()
@@ -31,10 +31,14 @@ def menu():
     valrb=Radiobutton(content, text='show exact and approximated values',
                       variable=logvar, value=False)
 
-    cpprb=Radiobutton(content, text='compute with c++',
-                      variable=cppvar, value=True)
-    pyrb=Radiobutton(content, text='compute with python',
-                     variable=cppvar, value=False)
+    cpprb=Radiobutton(content, text='numerics with c++',
+                      variable=exactvar, value='cpp')
+    pyrb=Radiobutton(content, text='numerics with python',
+                     variable=exactvar, value='py')
+    falrb=Radiobutton(content, text='exact (whole spectrum)',
+                      variable=exactvar, value='fal')
+    f2rb=Radiobutton(content, text='exact (2 first values)',
+                     variable=exactvar, value='f2')
     cplbl=Label(content, text="Compare with:")
 
     Jmin= StringVar() #TODO
@@ -61,19 +65,21 @@ def menu():
 
     compute=Button(content, text="Compute !", command=lambda: draw(
         logvar.get(),N.get(),Jmin.get(),Jmax.get(),Jstep.get(),Nb_values.get(),
-        cppvar.get(),constantvar.get(),tkdimervar.get(),tdblockvar.get()))
+        exactvar.get(),constantvar.get(),tkdimervar.get(),tdblockvar.get()))
     
     
     
     content.grid(column=0, row=0)
     cpprb.grid(column=0,row=0)
     pyrb.grid(column=0,row=1)
+    falrb.grid(column=0,row=2)
+    f2rb.grid(column=0,row=3)
     logrb.grid(column=1,row=0)
     valrb.grid(column=1,row=1,columnspan=2)
-    cplbl.grid(column=0,row=2,columnspan=3)
-    constantcb.grid(column=0,row=3)
-    tkdimercb.grid(column=1,row=3)
-    tdblockcb.grid(column=2,row=3)
+    cplbl.grid(column=0,row=4,columnspan=3)
+    constantcb.grid(column=0,row=5)
+    tkdimercb.grid(column=1,row=5)
+    tdblockcb.grid(column=2,row=5)
     Jminlbl.grid(column=3,row=0)
     Jminen.grid(column=4,row=0)
     Jmaxlbl.grid(column=3,row=1)

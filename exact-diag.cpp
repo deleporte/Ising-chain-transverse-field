@@ -1,6 +1,8 @@
 #include <iostream>
+#define ARMA_64BIT_WORD
 #include <armadillo>
 #include <cmath>
+
 
 using namespace std;
 using namespace arma;
@@ -27,14 +29,14 @@ vector<int> digits(int base, int i){
 
 sp_mat _build_mat(int N, float J)
 {
-  vector<float> data; // initialized to empty arrays
+  vector<double> data; // initialized to empty arrays
   vector<int> state, varstate, row_ind, col_ind;
   data.reserve(N*pow(2,N));
   row_ind.reserve(N*pow(2,N));
   col_ind.reserve(N*pow(2,N));
   state.reserve(N);
   varstate.reserve(N);
-  float value;
+  double value;
   int i,j;
   umat locations;//(2,pow(2,N)*(N+1));
   for(i=0; i<pow(2,N); i++){
@@ -60,18 +62,18 @@ sp_mat _build_mat(int N, float J)
   return sp_mat(locations, conv_to<colvec>::from(data),pow(2,N),pow(2,N));
 }
 
-void _find_spectrum(sp_mat M, int Nb_values, float* values){
-  vector<float> eigs;
+void _find_spectrum(sp_mat M, int Nb_values, double* values){
+  vector<double> eigs;
   eigs.reserve(Nb_values);
   vec eigval = eigs_sym(M,Nb_values,"sa"); // armadillo vec type
-  eigs = conv_to< vector<float> >::from(eigval); //std vector type
-  //if (sizeof(values)>= Nb_values*sizeof(float)){
+  eigs = conv_to< vector<double> >::from(eigval); //std vector type
+  //if (sizeof(values)>= Nb_values*sizeof(double)){
     copy(eigs.begin(), eigs.end(), values);
     //}
 }
 
-void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
-  float *vals = new float[Nb_values];
+void compute_pack_spectrum(int N, int samples, int Nb_values, double* values){
+  double *vals = new double[Nb_values];
   float J=0;
   int i=0;
   sp_mat M;
@@ -79,7 +81,7 @@ void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
     J = float(i)/(float(samples-1));
     M=_build_mat(N,J);
     _find_spectrum(M,Nb_values, vals);
-    //if (sizeof(values)>= Nb_values*samples*sizeof(float)){
+    //if (sizeof(values)>= Nb_values*samples*sizeof(double)){
       copy(vals,vals+Nb_values,values+i*Nb_values); // We need double-checks
       //}
   }
@@ -92,7 +94,7 @@ void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
 // int main(){
 //   sp_mat M;
 //   vector<int> state;
-//   float eigvals[3];
+//   double eigvals[3];
 //   cout << "Testing the library." << endl;
 //   cout << "The (inverse) digits of 6 in base 2 are: "
 //        << digits(2,6)[0]
@@ -113,9 +115,9 @@ void compute_pack_spectrum(int N, int samples, int Nb_values, float* values){
 // }
 
 extern "C" {
-  void computePackSpectrum(int N, int samples, int Nb_values, float* values){
+  void computePackSpectrum(int N, int samples, int Nb_values, double* values){
     return compute_pack_spectrum(N,samples,Nb_values, values); }
 
-  void computeSpectrum(int N, float J, int Nb_values, float* values){
+  void computeSpectrum(int N, float J, int Nb_values, double* values){
     return _find_spectrum(_build_mat(N,J),Nb_values, values); }
 }

@@ -7,9 +7,9 @@ exec open("exact-diag.py")
 exec open("exact-diag-wrapper.py")
 exec open("constant-fields.py")
 exec open("turned-block.py")
+exec open("fermions.py")
 
-
-def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,cpp=True,Nb_values=10,
+def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='cpp',Nb_values=10,
          cs=True,dm=True,tb=False):
     plt.ion()
     fig=plt.figure()
@@ -26,13 +26,20 @@ def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,cpp=True,Nb_values=10,
     Xtb=[]
     Ytb=[]
     htb, =ax.plot(Xtb,Ytb,'yo')
-    plt.axis([Jmin,Jmax,-N,0])
+    Xfm=[]
+    Yfm=[]
+    hfm, =ax.plot(Xfm,Yfm,'wo',ms=4)
+    plt.axis([Jmin,Jmax,-N,N])
     plt.show()
     for enumer in range(0,int((Jmax-Jmin)/Jstep+1)):
         J=Jmin+Jstep*enumer+0.00001
-        if cpp:
+        if exact=='cpp':
             values=exactdiag_cpp(J,N,Nb_values)
-        else:
+        if exact=='fal':
+            values=fermions(J,N)
+        if exact=='f2':
+            values=exact_two_fermions(J,N)
+        if exact=='py':
             values=exactdiag(J,N,Nb_values)
         for val in values:
             X.append(J)
@@ -77,6 +84,19 @@ def showexact(N=6,Nb_values=50):
     print(time.time()-t)
     plt.plot(X,Y,'ro')
     plt.axis([0,1,-N,max(Y)])
+    plt.show()
+
+def showgap(N=6):
+    X=[]
+    Y=[]
+    t=time.time()
+    for enumer in range(0,100):
+        J=0.01*float(enumer)
+        values=sorted(exactdiag_cpp(J=J,N=N,Nb_values=2))
+        X.append(J)
+        Y.append(np.log(abs(np.log(values[1]-values[0]))))
+    plt.plot(X,Y,'ro')
+    plt.axis([0,1,min(Y),max(Y)])
     plt.show()
 
 def exactvsconstant(N=6,Nb_values=50):
