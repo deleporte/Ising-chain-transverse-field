@@ -8,9 +8,10 @@ exec open("exact-diag-wrapper.py")
 exec open("constant-fields.py")
 exec open("turned-block.py")
 exec open("fermions.py")
+exec open("lookatone.py")
 
-def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='cpp',Nb_values=10,
-         cs=True,dm=True,tb=False):
+def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='fal',Nb_values=10,
+         cs=True,tdm=True,odm=True,tb=False):
     plt.ion()
     fig=plt.figure()
     ax=fig.add_subplot(111)
@@ -20,9 +21,12 @@ def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='cpp',Nb_values=10,
     Xcs=[]
     Ycs=[]
     hcs, =ax.plot(Xcs,Ycs,'bo')
-    Xdm=[]
-    Ydm=[]
-    hdm, =ax.plot(Xdm,Ydm,'go')
+    Xtdm=[]
+    Ytdm=[]
+    htdm, =ax.plot(Xtdm,Ytdm,'go')
+    Xodm=[]
+    Yodm=[]
+    hodm, =ax.plot(Xodm,Yodm,'co')
     Xtb=[]
     Ytb=[]
     htb, =ax.plot(Xtb,Ytb,'yo')
@@ -53,13 +57,20 @@ def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='cpp',Nb_values=10,
                 hcs.set_xdata(Xcs)
                 Ycs.append(val)
                 hcs.set_ydata(Ycs)
-        if dm:
+        if tdm:
             values=approxdiag_trackdimers(J,N)
             for val in values:
-                Xdm.append(J)
-                hdm.set_xdata(Xdm)
-                Ydm.append(val)
-                hdm.set_ydata(Ydm)
+                Xtdm.append(J)
+                htdm.set_xdata(Xtdm)
+                Ytdm.append(val)
+                htdm.set_ydata(Ytdm)
+        if odm:
+            values=approxdiag_onedimer(J,N)
+            for val in values:
+                Xodm.append(J)
+                hodm.set_xdata(Xodm)
+                Yodm.append(val)
+                hodm.set_ydata(Yodm)
         if tb:
             values=approxdiag_turnedblock(J,N)
             for val in values:
@@ -69,8 +80,7 @@ def show(N=6,Jmin=0.,Jmax=1.,Jstep=0.01,exact='cpp',Nb_values=10,
                 htb.set_ydata(Ytb)
         print J
         plt.draw()
-    
-
+        
 def showexact(N=6,Nb_values=50):
     X=[]
     Y=[]
@@ -156,6 +166,53 @@ def exactvstrackdimers(N=6,Nb_values=50):
             Yappr.append(val)
     plt.plot(X,Y,'ro')
     plt.plot(Xappr,Yappr,'bo')
+    plt.axis([0,1,-N,max(Y)])
+    plt.show()
+
+def exactvsonedimer(N=6,Nb_values=50):
+    X=[]
+    Y=[]
+    Xappr=[]
+    Yappr=[]
+    for enumer in range(0,100):
+        J=0.01*float(enumer)+0.001
+        values=exactdiag_cpp(J=J,N=N,Nb_values=Nb_values)
+        for val in values:
+            X.append(J)
+            Y.append(val)
+        values=approxdiag_onedimer(J,N)
+        for val in values:
+            Xappr.append(J)
+            Yappr.append(val)
+    plt.plot(X,Y,'ro')
+    plt.plot(Xappr,Yappr,'bo')
+    plt.axis([0,1,-N,max(Y)])
+    plt.show()
+
+def exactvsonevstrack(N=6,Nb_values=50):
+    X=[]
+    Y=[]
+    Xone=[]
+    Yone=[]
+    Xtrack=[]
+    Ytrack=[]
+    for enumer in range(0,100):
+        J=0.01*float(enumer)+0.001
+        values=exactdiag_cpp(J=J,N=N,Nb_values=Nb_values)
+        for val in values:
+            X.append(J)
+            Y.append(val)
+        values=approxdiag_onedimer(J,N)
+        for val in values:
+            Xone.append(J)
+            Yone.append(val)
+        values=approxdiag_trackdimers(J,N)
+        for val in values:
+            Xtrack.append(J)
+            Ytrack.append(val)
+    plt.plot(X,Y,'ro')
+    plt.plot(Xone,Yone,'bo')
+    plt.plot(Xtrack,Ytrack,'go')
     plt.axis([0,1,-N,max(Y)])
     plt.show()
 
@@ -277,4 +334,23 @@ def trackdimersvsturnedblocks(N=6):
     plt.plot(X,Ydm,'bo')
     plt.plot(X,Ytb,'go')
     #plt.axis([0,1,-N,max()])
+    plt.show()
+
+def exactvsnearone(N=6):
+    X=[]
+    Y=[]
+    Xappr=[]
+    Yappr=[]
+    for enumer in range(1,100):
+        J=+0.01*float(enumer)
+        values = fermions(J,N)
+        for v in values:
+            X.append(J)
+            Y.append(v)
+        values = guessnearone(J,N)
+        for v in values:
+            Xappr.append(J+0.000003)
+            Yappr.append(v)
+    plt.plot(X,Y,'bo')
+    plt.plot(Xappr,Yappr,'go')
     plt.show()

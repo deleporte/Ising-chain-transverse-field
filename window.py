@@ -11,6 +11,8 @@ def menu():
     constantvar.set(True)
     tkdimervar=BooleanVar()
     tkdimervar.set(True)
+    odimervar=BooleanVar()
+    odimervar.set(True)
     tdblockvar=BooleanVar()
     tdblockvar.set(True)
 
@@ -19,12 +21,15 @@ def menu():
     constantcb=Checkbutton(content, text="Constant fields",
                          variable=constantvar,
                          onvalue=True)
-    tkdimercb=Checkbutton(content, text="Neighbour dimers",
+    tkdimercb=Checkbutton(content, text="Track dimers",
                          variable=tkdimervar,
+                         onvalue=True)
+    odimercb=Checkbutton(content, text="One dimer",
+                         variable=odimervar,
                          onvalue=True)
     tdblockcb=Checkbutton(content, text="Upturned block",
                          variable=tdblockvar,
-                         onvalue=True)
+                          onvalue=True)
 
     logrb=Radiobutton(content, text='show log of ratio',
                       variable=logvar, value=True)
@@ -65,7 +70,7 @@ def menu():
 
     compute=Button(content, text="Compute !", command=lambda: draw(
         logvar.get(),N.get(),Jmin.get(),Jmax.get(),Jstep.get(),Nb_values.get(),
-        exactvar.get(),constantvar.get(),tkdimervar.get(),tdblockvar.get()))
+        exactvar.get(),constantvar.get(),tkdimervar.get(),odimervar.get(),tdblockvar.get()))
     
     
     
@@ -79,7 +84,8 @@ def menu():
     cplbl.grid(column=0,row=4,columnspan=3)
     constantcb.grid(column=0,row=5)
     tkdimercb.grid(column=1,row=5)
-    tdblockcb.grid(column=2,row=5)
+    odimercb.grid(column=2,row=5)
+    tdblockcb.grid(column=3,row=5)
     Jminlbl.grid(column=3,row=0)
     Jminen.grid(column=4,row=0)
     Jmaxlbl.grid(column=3,row=1)
@@ -95,7 +101,7 @@ def menu():
     root.mainloop()
 
 def draw(logvar,N,Jmin,Jmax,Jstep,Nb_values,cppvar,constantvar,tkdimervar,
-         tdblockvar):
+         odimervar,tdblockvar):
     try:
         if logvar:
             log(int(N),float(Jmin),float(Jmax),
@@ -106,6 +112,6 @@ def draw(logvar,N,Jmin,Jmax,Jstep,Nb_values,cppvar,constantvar,tkdimervar,
             show(int(N),float(Jmin),float(Jmax),
                 float(Jstep),
                 cppvar,int(Nb_values),
-                constantvar,tkdimervar,tdblockvar)
+                 constantvar,tkdimervar,odimervar,tdblockvar)
     except ValueError:
         pass

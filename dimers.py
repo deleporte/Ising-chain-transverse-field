@@ -36,3 +36,23 @@ def trackdimers_matrix(J,N):
 
 def approxdiag_trackdimers(J,N):
     return sorted(scipy.linalg.eigvalsh(trackdimers_matrix(J,N)))
+
+def onedimer_matrix(J,N):
+    M=np.zeros((2*N-2,2*N-2))
+    for k in range(N): #without dimer
+        M[k,k]=-J*((N-2*k)**2-N)/(N-1) #Ising
+        M[k,k+1]=(1.-J)*np.sqrt((k+1)*(N-k)) #Transverse field
+        M[k+1,k]=M[k,k+1]
+    M[N,N]=-J*N
+    for k in range(N-3): #with dimer
+        M[N+k+1,N+k+1]=-J*((N-2*k-2)*(N-2*k-4)/(N-2)-4*(k+1)*(k+2)/(N-1)) #Ising
+        if k<N-4:
+            M[N+k+1,N+k+2]=(1.-J)*np.sqrt((k+1)*(N-k-4))
+            M[N+k+2,N+k+1]=M[N+k+1,N+k+2]
+        #Ising interaction between dimer and non-dimer
+        M[N+k+1,k+2]=-4.*J/(N-1)*np.sqrt((N-k-2)*(N-k-3)*(k+2)*(k+1)/(N-2))
+        M[k+2,N+k+1]=M[N+k+1,k+2]
+    return M
+
+def approxdiag_onedimer(J,N):
+    return sorted(scipy.linalg.eigvalsh(onedimer_matrix(J,N)))
